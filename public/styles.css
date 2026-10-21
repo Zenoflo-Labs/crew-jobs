@@ -1,0 +1,31 @@
+:root { --ink: #1d2433; --muted: #5b6474; --line: #d9dee7; --bg: #f6f7fa; --accent: #1f5fbf; --bad: #b42318; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 16px; background: #fff; border-bottom: 4px solid var(--line); }
+.top.env-local { border-bottom-color: #2e7d32; }
+.top.env-staging { border-bottom-color: #ed8b00; }
+.top.env-production { border-bottom-color: #b42318; }
+.brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+.env { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: #fff; background: #2e7d32; }
+.env-staging .env { background: #ed8b00; }
+.env-production .env { background: #b42318; }
+.who { color: var(--muted); font-size: 14px; margin-left: auto; }
+main { max-width: 720px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 8px 0 16px; }
+.card { overflow-wrap: anywhere; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+.card a { color: var(--ink); text-decoration: none; display: block; }
+.meta { color: var(--muted); font-size: 14px; }
+.status { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: #e8edf5; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+form { display: grid; gap: 12px; }
+label { display: grid; gap: 4px; font-weight: 600; font-size: 14px; }
+input, select, textarea { font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; width: 100%; }
+button, .button { font: inherit; font-weight: 600; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+.secondary { background: #fff; color: var(--accent); }
+.link { background: none; border: none; color: var(--accent); padding: 0; }
+.error { color: var(--bad); font-weight: 600; }
+.notice { overflow-wrap: anywhere; background: #fff8e1; border: 1px solid #f0d58c; border-radius: 8px; padding: 12px; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+dt { color: var(--muted); }
+dd { margin: 0; }

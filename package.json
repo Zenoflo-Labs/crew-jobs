@@ -1,0 +1,30 @@
+{
+  "name": "crew-jobs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Crew Jobs: a small job and invoice tracker used by the Zenoflo Engineering Academy. Fake data only.",
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "size": "node --import tsx scripts/size-budget.ts",
+    "check": "npm run typecheck && npm test && npm run size"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "express": "4.22.3",
+    "pg": "8.16.3",
+    "tsx": "4.23.15"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.25",
+    "@types/node": "22.20.5",
+    "@types/pg": "8.15.6",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
