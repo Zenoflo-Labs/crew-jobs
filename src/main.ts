@@ -36,9 +36,10 @@ console.log(applied.length > 0 ? `Applied ${applied.length} migration(s): ${appl
 if (await seedIfEmpty(db, config.seedPassword)) console.log('Seeded made-up test data (see README for the test accounts).');
 
 server.on('request', createApp({ db, config }));
-console.log(`Crew Jobs is running at http://localhost:${config.port} (${label})`);
-console.log('Press Ctrl + C to stop.');
 
+// Register the stop handlers before printing the running line. Until a
+// listener exists, Ctrl + C uses the system default and kills the process
+// at once, skipping the clean shutdown.
 let stopping = false;
 async function stop() {
   if (stopping) return;
@@ -51,3 +52,6 @@ async function stop() {
 }
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
+
+console.log(`Crew Jobs is running at http://localhost:${config.port} (${label})`);
+console.log('Press Ctrl + C to stop.');
