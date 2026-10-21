@@ -10,6 +10,10 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const dataDir = mkdtempSync(join(tmpdir(), 'crew-jobs-'));
 const port = String(3100 + Math.floor(Math.random() * 800));
 const started: ChildProcess[] = [];
+// On Windows a script can't send another program a real Ctrl + C: kill('SIGINT')
+// force-stops it instead. A real Ctrl + C typed in a Windows terminal does reach
+// the app, so the clean-stop check runs everywhere except Windows CI.
+const canSendCtrlC = process.platform !== 'win32';
 
 function start(env: Record<string, string> = {}) {
   const child = spawn(process.execPath, ['--import', 'tsx', 'src/main.ts'], {
@@ -28,13 +32,19 @@ function start(env: Record<string, string> = {}) {
   return { child, exited, waitFor, output: () => output };
 }
 
+// Stops a copy between tests: Ctrl + C where a script can send it, otherwise a plain kill.
+async function stopApp(app: ReturnType<typeof start>) {
+  app.child.kill(canSendCtrlC ? 'SIGINT' : undefined);
+  await app.exited;
+}
+
 afterAll(() => {
   for (const child of started) child.kill('SIGKILL');
   rmSync(dataDir, { recursive: true, force: true });
 });
 
 describe('npm start (Chapter 10 contract)', () => {
-  it('seeds, prints the running line, refuses a second copy on the same port, and stops on Ctrl + C', async () => {
+  it('seeds, prints the running line, and refuses a second copy on the same port', async () => {
     const first = start();
     const output = await first.waitFor('Crew Jobs is running');
     expect(output).toContain('Seeded made-up test data');
@@ -47,10 +57,7 @@ describe('npm start (Chapter 10 contract)', () => {
     expect(await second.exited).toBe(1);
     expect(second.output()).toContain(`port ${port} is already in use`);
     expect(second.output()).not.toContain('Opening the local database');
-
-    first.child.kill('SIGINT');
-    expect(await first.exited).toBe(0);
-    expect(first.output()).toContain('Crew Jobs stopped.');
+    await stopApp(first);
   });
 
   it('keeps data between starts and does not seed twice', async () => {
@@ -58,8 +65,15 @@ describe('npm start (Chapter 10 contract)', () => {
     const output = await again.waitFor('Crew Jobs is running');
     expect(output).toContain('Database is up to date.');
     expect(output).not.toContain('Seeded');
-    again.child.kill('SIGINT');
-    expect(await again.exited).toBe(0);
+    await stopApp(again);
+  });
+
+  it.runIf(canSendCtrlC)('stops cleanly on Ctrl + C (not on Windows CI: a script cannot send Ctrl + C there)', async () => {
+    const app = start();
+    await app.waitFor('Crew Jobs is running');
+    app.child.kill('SIGINT');
+    expect(await app.exited).toBe(0);
+    expect(app.output()).toContain('Crew Jobs stopped.');
   });
 
   it('refuses to start outside local without its required variables', async () => {
